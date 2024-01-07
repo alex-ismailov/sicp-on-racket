@@ -18,14 +18,20 @@
         ((even? exp) (squaremod-with-check (expmod-mr base (/ exp 2) mod) mod))
         (else (remainder (* base (expmod-mr base (- exp 1) mod)) mod))))
 
-(define (try-it n times)
-  (define res (expmod-mr (+ 1 (random (- n 1))) (- n 1) n))
-  (cond ((= times 0) #t)
-        ((and (not (= res 0)) (= res 1)) (try-it n (- times 1)))
-        (else #f)))
+(define (prime? n)
+  (= (expmod-mr
+       (+ 1 (random (- n 1)))
+       (- n 1)
+       n)
+     1))
+
+(define (run-test n times)
+  (cond ((= times 0) true)
+        ((prime? n) (run-test n (- times 1)))
+        (else false)))
 
 (define (miller-rabin-test n)
-  (try-it n 3))
+  (run-test n 3))
 
 ; ======= tests =======
 (check-equal? (miller-rabin-test 4) #f "expmod-mr 4")
